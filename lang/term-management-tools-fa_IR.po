@@ -1,3 +1,10 @@
+#: classes/class-Base.php
+msgid "Merge to New"
+msgstr ""
+
+#: classes/class-HTML.php
+msgid "New term name:"
+msgstr ""
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"

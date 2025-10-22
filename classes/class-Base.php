@@ -25,7 +25,7 @@ abstract class Base {
 	 */
 	protected function get_actions( string $taxonomy ) : array {
 		$actions = array(
-			'merge'      => __( 'Merge', 'term-management-tools' ),
+			'merge_to_new' => __( 'Merge to New', 'term-management-tools' ),
 			'change_tax' => __( 'Change taxonomy', 'term-management-tools' ),
 		);
 

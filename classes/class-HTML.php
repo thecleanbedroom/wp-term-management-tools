@@ -31,8 +31,8 @@ class HTML extends Base {
 			 */
 			echo '<div id="tmt-input-' . esc_attr( $key ) . '" style="display:none">';
 			switch ( $key ) {
-				case 'merge':
-					$success = $this->merge( $taxonomy );
+				case 'merge_to_new':
+					$success = $this->merge_to_new( $taxonomy );
 					break;
 				case 'set_parent':
 					$success = $this->set_parent( $taxonomy );
@@ -51,8 +51,8 @@ class HTML extends Base {
 	 *
 	 * @param string $taxonomy
 	 */
-	private function merge( string $taxonomy ) {
-		esc_html_e( 'into:', 'term-management-tools' );
+	private function merge_to_new( string $taxonomy ) {
+		esc_html_e( 'New term name:', 'term-management-tools' );
 		?>
 		<input name="bulk_to_tag" type="text" size="20" />
 		<?php

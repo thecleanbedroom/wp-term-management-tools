@@ -35,8 +35,8 @@ class HTML_Test extends TestCase {
 		$this->assertSame( $expected, $retrieved );
 
 
-		$retrieved = $dom->saveHTML( $dom->getElementById( 'tmt-input-merge') );
-		$expected  = '<div id="tmt-input-merge" style="display:none">into:		<input name="bulk_to_tag" type="text" size="20"></div>';
+		$retrieved = $dom->saveHTML( $dom->getElementById( 'tmt-input-merge_to_new') );
+		$expected  = '<div id="tmt-input-merge_to_new" style="display:none">New term name:\t\t<input name="bulk_to_tag" type="text" size="20"></div>';
 		$this->assertSame( $expected, $retrieved );
 
 		$retrieved = $dom->saveHTML( $dom->getElementById( 'tmt-input-change_tax') );

@@ -39,3 +39,11 @@ msgstr ""
 #: term-management-tools.php:242
 msgid "None"
 msgstr ""
+
+#: classes/class-Base.php
+msgid "Merge to New"
+msgstr ""
+
+#: classes/class-HTML.php
+msgid "New term name:"
+msgstr ""

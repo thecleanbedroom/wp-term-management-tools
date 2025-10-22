@@ -22,7 +22,7 @@ class Handlers extends Base {
 	public function do( string $action, string $taxonomy, array $terms_manually_selected ) : ? bool {
 		$terms_manually_selected = array_map( 'absint', $terms_manually_selected );
 		switch ( $action ) {
-			case 'merge':
+			case 'merge_to_new':
 				return $this->merge_terms( $terms_manually_selected, $taxonomy );
 			case 'set_parent':
 				return $this->set_parent_term( $terms_manually_selected, $taxonomy );

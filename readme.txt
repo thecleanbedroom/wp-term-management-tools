@@ -16,7 +16,7 @@ _Please note this plugin requires at least PHP 7.1._
 
 If you need to reorganize your tags and categories, this plugin will make it easier for you. It adds three new options to the Bulk Actions dropdown on term management pages:
 
-* Merge - combine two or more terms into one
+* Merge to New - combine two or more terms into one newly named term
 * Set Parent - set the parent for one or more terms (for hierarchical taxonomies)
 * Change Taxonomy - convert terms from one taxonomy to another
 
@@ -64,7 +64,7 @@ Initial version of this plugin was by [scribu](http://scribu.net/), with contrib
 == Screenshots  ==
 
 1. Set Parent option. In this case, the term "New EN" will be set as a child of "Parent One EN"
-2. Merge option. Here, the two selected terms will be merged into a new term named "Merged." In addition, because both source terms share the same parent term ("Parent One EN"), the new term will also have "Parent One EN" as its parent term.
+2. Merge to New option. Here, the two selected terms will be merged into a new term named "Merged." In addition, because both source terms share the same parent term ("Parent One EN"), the new term will also have "Parent One EN" as its parent term.
 3. Change Taxonomy option. Here, the "Parent One EN" category will be sent to the custom taxonomy "Hierarchical" (which I added for the sake of testing). A few other things to note here. First, the two child terms will also be moved and, because the target taxonomy is also hierarchical the parent-child relationships will be preserved. Second, if there are any WPML translations of these terms, they will also be moved and the translations maintained.
 
 == Changelog  ==

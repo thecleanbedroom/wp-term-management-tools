@@ -35,7 +35,7 @@ class Handlers_Test extends TestCase {
 		$term_ids_to_merge = $this->add_terms( $taxonomy, 5 );
 		$all_terms         = $this->get_all_terms( $taxonomy );
 		$this->assertEquals( 5, count( $all_terms ) );
-		$this->handler->do( 'merge', $taxonomy, $term_ids_to_merge );
+		$this->handler->do( 'merge_to_new', $taxonomy, $term_ids_to_merge );
 		$all_terms = $this->get_all_terms( $taxonomy );
 		$this->assertEquals( 1, count( $all_terms ) );
 		$this->clean_taxonomy( $taxonomy );
@@ -46,7 +46,7 @@ class Handlers_Test extends TestCase {
 		$term_ids_to_merge       = $this->add_terms( $taxonomy, 5 );
 		$all_terms               = $this->get_all_terms( $taxonomy );
 		$this->assertEquals( 5, count( $all_terms ) );
-		$this->handler->do( 'merge', $taxonomy, $term_ids_to_merge );
+		$this->handler->do( 'merge_to_new', $taxonomy, $term_ids_to_merge );
 		$all_terms = $this->get_all_terms( $taxonomy );
 		$this->assertEquals( 1, count( $all_terms ) );
 		$this->clean_taxonomy( $taxonomy );
@@ -57,7 +57,7 @@ class Handlers_Test extends TestCase {
 		$term_ids_to_merge       = $this->add_terms( $taxonomy, 5 );
 		$all_terms               = $this->get_all_terms( $taxonomy );
 		$this->assertEquals( 5, count( $all_terms ) );
-		$this->handler->do( 'merge', $taxonomy, $term_ids_to_merge );
+		$this->handler->do( 'merge_to_new', $taxonomy, $term_ids_to_merge );
 		$all_terms = $this->get_all_terms( $taxonomy );
 		$this->assertEquals( 1, count( $all_terms ) );
 		foreach ( $all_terms as $term_obj ) {
@@ -71,7 +71,7 @@ class Handlers_Test extends TestCase {
 		$term_ids_to_merge = $this->add_terms( $taxonomy, 5, $parent_term_id[0] );
 		$all_terms         = $this->get_all_terms( $taxonomy );
 		$this->assertEquals( 6, count( $all_terms ) );
-		$this->handler->do( 'merge', $taxonomy, $term_ids_to_merge );
+		$this->handler->do( 'merge_to_new', $taxonomy, $term_ids_to_merge );
 		$all_terms = $this->get_all_terms( $taxonomy );
 		// We should have two terms, 1 parent and one child
 		$this->assertEquals( 2, count( $all_terms ) );
@@ -95,7 +95,7 @@ class Handlers_Test extends TestCase {
 		$this->assertEquals( 7, count( $all_terms ) );
 		// Add the second parent term to the list
 		$term_ids_to_merge[] = $parent_term_ids[1];
-		$this->handler->do( 'merge', $taxonomy, $term_ids_to_merge );
+		$this->handler->do( 'merge_to_new', $taxonomy, $term_ids_to_merge );
 		$all_terms = $this->get_all_terms( $taxonomy );
 		// We should have two terms, 1 parent and one child
 		$this->assertEquals( 2, count( $all_terms ) );

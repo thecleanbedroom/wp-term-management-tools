@@ -1,3 +1,10 @@
+#: classes/class-Base.php
+msgid "Merge to New"
+msgstr ""
+
+#: classes/class-HTML.php
+msgid "New term name:"
+msgstr ""
 # Copyright (C) 2010 
 # This file is distributed under the same license as the  package.
 msgid ""
