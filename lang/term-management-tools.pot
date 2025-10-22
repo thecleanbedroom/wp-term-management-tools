@@ -47,3 +47,15 @@ msgstr ""
 #: classes/class-HTML.php
 msgid "New term name:"
 msgstr ""
+
+#: classes/class-Base.php
+msgid "Merge into Existing"
+msgstr ""
+
+#: classes/class-HTML.php
+msgid "Select existing category to merge into:"
+msgstr ""
+
+#: classes/class-HTML.php
+msgid "Select a category"
+msgstr ""

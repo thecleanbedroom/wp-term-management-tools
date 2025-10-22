@@ -63,6 +63,7 @@ class TermManagementTools extends Base {
 	 * @codeCoverageIgnore
 	 */
 	private function set_hooks() : void {
+		add_action( 'wp_ajax_tmt_merge_into_existing', [ $this, 'ajax_merge_into_existing' ] );
 		add_action( 'load-edit-tags.php', array( $this, 'dispatcher' ) );
 		add_action( 'admin_notices', array( $this, 'notice' ) );
 	}
@@ -173,12 +174,93 @@ class TermManagementTools extends Base {
 	 *
 	 * @codeCoverageIgnore
 	 */
-	public function enqueue_assets() {
+	public function enqueue_assets() : void {
 		global $taxonomy;
 		$js_dev = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 		wp_enqueue_script( 'term-management-tools', CNMD_TMT_URL . 'assets/' . $js_dev . 'script.js', array( 'jquery' ), '2.0.0', true );
 		wp_localize_script( 'term-management-tools', 'tmtL10n', $this->get_actions( $taxonomy ) );
+		wp_localize_script( 'term-management-tools', 'tmtAjax', array( 'nonce' => wp_create_nonce( 'tmt_merge_into_existing' ), 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 	}
 
-}
+	/**
+	 * AJAX endpoint to merge selected terms into an existing target term.
+	 */
+	public function ajax_merge_into_existing() : void {
+		check_ajax_referer( 'tmt_merge_into_existing', 'nonce' );
 
+		$taxonomy = isset( $_POST['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy'] ) ) : 'post_tag';
+		$tax      = get_taxonomy( $taxonomy );
+		if ( ! $tax || ! current_user_can( $tax->cap->manage_terms ) ) {
+			wp_send_json_error( array( 'message' => 'forbidden' ), 403 );
+		}
+
+		$source_ids = isset( $_POST['source_ids'] ) && is_array( $_POST['source_ids'] ) ? array_map( 'absint', $_POST['source_ids'] ) : array();
+		$target_id  = isset( $_POST['target_id'] ) ? absint( $_POST['target_id'] ) : 0;
+
+		if ( empty( $source_ids ) || ! $target_id ) {
+			wp_send_json_error( array( 'message' => 'invalid_parameters' ), 400 );
+		}
+
+		$ok = $this->merge_into_existing( $source_ids, $target_id, $taxonomy );
+		if ( $ok ) {
+			wp_send_json_success();
+		}
+		wp_send_json_error( array( 'message' => 'merge_failed' ), 500 );
+	}
+
+	/**
+	 * Merge terms into an existing term.
+	 *
+	 * @param int[]  $source_ids Term IDs to merge.
+	 * @param int    $target_id  Term ID to merge into.
+	 * @param string $taxonomy   Taxonomy name.
+	 *
+	 * @return bool
+	 */
+	public function merge_into_existing( array $source_ids, int $target_id, string $taxonomy ) : bool {
+		if ( ! term_exists( $target_id, $taxonomy ) ) {
+			return false;
+		}
+		$to_term_obj = get_term( $target_id, $taxonomy );
+
+		$first_found_parent_in_list_of_terms_to_merge = null;
+		$all_have_same_parent                         = true;
+
+		foreach ( $source_ids as $term_id ) {
+			$term_id = (int) $term_id;
+			if ( $term_id === $target_id ) {
+				if ( null === $first_found_parent_in_list_of_terms_to_merge ) {
+					$first_found_parent_in_list_of_terms_to_merge = $to_term_obj->parent;
+				}
+				continue;
+			}
+
+			$old_term = get_term( $term_id, $taxonomy );
+			if ( null === $first_found_parent_in_list_of_terms_to_merge ) {
+				$first_found_parent_in_list_of_terms_to_merge = $old_term->parent;
+			}
+			if ( $first_found_parent_in_list_of_terms_to_merge !== $old_term->parent ) {
+				$all_have_same_parent = false;
+			}
+			$ret = wp_delete_term(
+				$term_id,
+				$taxonomy,
+				array(
+					'default'       => $target_id,
+					'force_default' => true,
+				)
+			);
+			if ( is_wp_error( $ret ) ) {
+				continue;
+			}
+
+			do_action( 'term_management_tools_term_merged', $to_term_obj, $old_term );
+		}
+
+		if ( $all_have_same_parent ) {
+			wp_update_term( $target_id, $taxonomy, array( 'parent' => $first_found_parent_in_list_of_terms_to_merge ) );
+		}
+
+		return true;
+	}
+}

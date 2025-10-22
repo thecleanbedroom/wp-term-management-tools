@@ -24,6 +24,8 @@ class Handlers extends Base {
 		switch ( $action ) {
 			case 'merge_to_new':
 				return $this->merge_terms( $terms_manually_selected, $taxonomy );
+			case 'merge_into_existing':
+				return $this->merge_into_existing( $terms_manually_selected, $taxonomy );
 			case 'set_parent':
 				return $this->set_parent_term( $terms_manually_selected, $taxonomy );
 			case 'change_tax':
@@ -42,19 +44,19 @@ class Handlers extends Base {
 	private function merge_terms( array $terms_manually_selected, string $taxonomy ) : bool {
 		$term_name = $_REQUEST['bulk_to_tag'];
 
-		$term = term_exists( $term_name, $taxonomy );
+		$term = \term_exists( $term_name, $taxonomy );
 		if ( ! $term ) {
-			$term = wp_insert_term( $term_name, $taxonomy );
+			$term = \wp_insert_term( $term_name, $taxonomy );
 		}
 
-		if ( is_wp_error( $term ) ) {
+		if ( \is_wp_error( $term ) ) {
 			// @codeCoverageIgnoreStart
 			return false;
 			// @codeCoverageIgnoreEnd
 		}
 
 		$to_term     = (int) $term['term_id'];
-		$to_term_obj = get_term( $to_term, $taxonomy );
+		$to_term_obj = \get_term( $to_term, $taxonomy );
 
 		$first_found_parent_in_list_of_terms_to_merge = null;
 		$all_have_same_parent                         = true;
@@ -69,15 +71,15 @@ class Handlers extends Base {
 				//@codeCoverageIgnoreEnd
 			}
 
-			$old_term = get_term( $term_id, $taxonomy );
-			// A little bit of redundancy to prefent an unecessary hit to the db
+			$old_term = \get_term( $term_id, $taxonomy );
+			// A little bit of redundancy to prevent an unnecessary hit to the db
 			if ( null === $first_found_parent_in_list_of_terms_to_merge ) {
 				$first_found_parent_in_list_of_terms_to_merge = $old_term->parent;
 			}
 			if ( $first_found_parent_in_list_of_terms_to_merge !== $old_term->parent ) {
 				$all_have_same_parent = false;
 			}
-			$ret = wp_delete_term(
+			$ret = \wp_delete_term(
 				$term_id,
 				$taxonomy,
 				array(
@@ -85,7 +87,7 @@ class Handlers extends Base {
 					'force_default' => true,
 				)
 			);
-			if ( is_wp_error( $ret ) ) {
+			if ( \is_wp_error( $ret ) ) {
 				// @codeCoverageIgnoreStart
 				continue;
 				// @codeCoverageIgnoreEnd
@@ -101,10 +103,57 @@ class Handlers extends Base {
 			 *@since 1.1.2
 			 *
 			 */
-			do_action( 'term_management_tools_term_merged', $to_term_obj, $old_term );
+			\do_action( 'term_management_tools_term_merged', $to_term_obj, $old_term );
 		}
 		if ( $all_have_same_parent ) {
-			wp_update_term( $to_term, $taxonomy, array( 'parent' => $first_found_parent_in_list_of_terms_to_merge ) );
+			\wp_update_term( $to_term, $taxonomy, array( 'parent' => $first_found_parent_in_list_of_terms_to_merge ) );
+		}
+
+		return true;
+	}
+
+	private function merge_into_existing( array $terms_manually_selected, string $taxonomy ) : bool {
+		$to_term = (int) $_REQUEST['merge_into_existing_target'];
+		if ( ! \term_exists( $to_term, $taxonomy ) ) {
+			return false;
+		}
+		$to_term_obj = \get_term( $to_term, $taxonomy );
+
+		$first_found_parent_in_list_of_terms_to_merge = null;
+		$all_have_same_parent                         = true;
+
+		foreach ( $terms_manually_selected as $term_id ) {
+			if ( (int) $term_id === $to_term ) {
+				if ( null === $first_found_parent_in_list_of_terms_to_merge ) {
+					$first_found_parent_in_list_of_terms_to_merge = $to_term_obj->parent;
+				}
+				continue;
+			}
+
+			$old_term = \get_term( $term_id, $taxonomy );
+			if ( null === $first_found_parent_in_list_of_terms_to_merge ) {
+				$first_found_parent_in_list_of_terms_to_merge = $old_term->parent;
+			}
+			if ( $first_found_parent_in_list_of_terms_to_merge !== $old_term->parent ) {
+				$all_have_same_parent = false;
+			}
+			$ret = \wp_delete_term(
+				$term_id,
+				$taxonomy,
+				array(
+					'default'       => $to_term,
+					'force_default' => true,
+				)
+			);
+			if ( \is_wp_error( $ret ) ) {
+				continue;
+			}
+
+			\do_action( 'term_management_tools_term_merged', $to_term_obj, $old_term );
+		}
+
+		if ( $all_have_same_parent ) {
+			\wp_update_term( $to_term, $taxonomy, array( 'parent' => $first_found_parent_in_list_of_terms_to_merge ) );
 		}
 
 		return true;

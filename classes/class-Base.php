@@ -25,14 +25,15 @@ abstract class Base {
 	 */
 	protected function get_actions( string $taxonomy ) : array {
 		$actions = array(
-			'merge_to_new' => __( 'Merge to New', 'term-management-tools' ),
-			'change_tax' => __( 'Change taxonomy', 'term-management-tools' ),
+			'merge_to_new' => \__( 'Merge to New', 'term-management-tools' ),
+			'merge_into_existing' => \__( 'Merge into Existing', 'term-management-tools' ),
+			'change_tax' => \__( 'Change taxonomy', 'term-management-tools' ),
 		);
 
-		if ( is_taxonomy_hierarchical( $taxonomy ) ) {
+		if ( \is_taxonomy_hierarchical( $taxonomy ) ) {
 			$actions = array_merge(
 				array(
-					'set_parent' => __( 'Set parent', 'term-management-tools' ),
+					'set_parent' => \__( 'Set parent', 'term-management-tools' ),
 				),
 				$actions
 			);
@@ -96,7 +97,7 @@ abstract class Base {
 	 * @return array
 	 */
 	protected function get_term_hierarchy( string $taxonomy ) {
-		return _get_term_hierarchy( $taxonomy );
+		return \_get_term_hierarchy( $taxonomy );
 	}
 
 

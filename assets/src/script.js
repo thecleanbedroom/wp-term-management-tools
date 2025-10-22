@@ -10,6 +10,11 @@ jQuery(
 						action: 'bulk_' + key,
 						name: title,
 						el: $( '#tmt-input-' + key )
+					},
+					{
+						action: 'bulk_merge_into_existing',
+						name: tmtL10n['merge_into_existing'] || 'Merge into Existing',
+						el: $( '#tmt-input-merge_into_existing' )
 					}
 				);
 			}
