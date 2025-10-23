@@ -63,8 +63,10 @@ class HTML extends Base {
 	 * @param string $taxonomy
 	 */
 	private function merge_to_new( string $taxonomy ) {
-			// existing code unchanged
-		}
+		\esc_html_e( 'New term name:', 'term-management-tools' );
+		echo "\t\t";
+		echo '<input name="bulk_to_tag" type="text" size="20">';
+	}
 
 		private function merge_into_existing( string $taxonomy ) {
             \esc_html_e( 'Select existing category to merge into:', 'term-management-tools' );

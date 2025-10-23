@@ -5,30 +5,39 @@ jQuery(
 		$.each(
 			tmtL10n,
 			function(key, title) {
+				if ( key === 'merge_into_existing' ) {
+					return; // added once below
+				}
 				actions.unshift(
 					{
 						action: 'bulk_' + key,
 						name: title,
 						el: $( '#tmt-input-' + key )
-					},
-					{
-						action: 'bulk_merge_into_existing',
-						name: tmtL10n['merge_into_existing'] || 'Merge into Existing',
-						el: $( '#tmt-input-merge_into_existing' )
 					}
 				);
+			}
+		);
+
+		actions.unshift(
+			{
+				action: 'bulk_merge_into_existing',
+				name: tmtL10n['merge_into_existing'] || 'Merge into Existing',
+				el: $( '#tmt-input-merge_into_existing' )
 			}
 		);
 
 		$( '.actions select' )
 		.each(
 			function() {
-				var $option = $( this ).find( 'option:first' );
+				var $select = $( this );
+				var $option = $select.find( 'option:first' );
 
 				$.each(
 					actions,
 					function(i, actionObj) {
-						$option.after( $( '<option>', {value: actionObj.action, html: actionObj.name} ) );
+						if ($select.find('option[value="' + actionObj.action + '"]').length === 0) {
+							$option.after( $( '<option>', {value: actionObj.action, html: actionObj.name} ) );
+						}
 					}
 				);
 			}
@@ -55,3 +64,4 @@ jQuery(
 		);
 	}
 );
+
